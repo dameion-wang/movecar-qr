@@ -1,2 +1,2 @@
 # movecar-qr
-relay mobile phone number by
+relay mobile phone number by qr-code
