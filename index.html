@@ -1,0 +1,64 @@
+<!doctype html>
+<html lang="zh-CN">
+<head>
+<meta charset="utf-8" />
+<meta name="viewport" content="width=device-width,initial-scale=1" />
+<title>请联系车主</title>
+<style>
+  body{font-family: system-ui, "PingFang SC", "Microsoft YaHei", Arial; display:flex; align-items:center; justify-content:center; min-height:100vh; margin:0; background:#f7f7f7}
+  .card{width:320px; background:#fff; padding:20px; border-radius:12px; box-shadow:0 6px 18px rgba(0,0,0,0.08); text-align:center;}
+  h1{font-size:18px; margin:0 0 8px}
+  p{margin:6px 0 14px; color:#666}
+  .mask{font-size:20px; letter-spacing:4px; margin-bottom:12px}
+  button{background:#2ecc71;border:none;color:#fff;padding:10px 16px;border-radius:8px;font-size:16px;cursor:pointer}
+  button:active{transform:translateY(1px)}
+  .hint{font-size:12px;color:#999;margin-top:10px}
+  .small{font-size:12px;color:#bbb;margin-top:8px}
+</style>
+</head>
+<body>
+  <div class="card" role="main">
+    <h1>已经阻碍他人通行？</h1>
+    <p class="small">扫码联系车主(为保护隐私，真实号码不公开)</p >
+    <div class="mask">****9292</div>
+
+    <!-- 点击后会触发拨号 -->
+    <button id="callBtn">请求移车 · 一键拨号</button>
+
+    <div class="hint" id="status" aria-live="polite"></div>
+  </div>
+
+<script>
+// 示例：把真实号码做 base64 编码后的字符串放这里
+// 例如真实号码 "+8613812345678" 的 Base64 是 "Kzg2MTM4MTIzNDU2Nzg="
+// 请把下面 example 替换为你自己号码编码后的字符串（我会告诉你怎么编码）
+const b64 = "Kzg6MTEyMzQ1Njc4OTA="; // <- 请替换（示例，实际需你生成）
+
+const callBtn = document.getElementById('callBtn');
+const status = document.getElementById('status');
+
+function decodeBase64(str){
+  try {
+    // 一些旧手机可能没有 atob，做兼容
+    if (typeof atob === 'function') return atob(str);
+    return decodeURIComponent(Array.prototype.map.call(str, c => '%' + ('00' + c.charCodeAt(0).toString(16)).slice(-2)).join(''));
+  } catch(e){
+    return null;
+  }
+}
+
+callBtn.addEventListener('click', () => {
+  status.textContent = "正在连接，请允许弹出拨号窗口...";
+  // 解码得到 tel URI（示例里我们将直接存成 tel: 开头或者 +86 开头）
+  const decoded = decodeBase64(b64);
+  if (!decoded) {
+    status.textContent = "发生错误，无法解码号码。";
+    return;
+  }
+  // decoded 期望形如 "+8613812345678" 或 "13812345678"
+  // 触发系统拨号（在移动端扫码打开很可靠）
+  window.location.href = "tel:" + decoded;
+});
+</script>
+</body>
+</html>
